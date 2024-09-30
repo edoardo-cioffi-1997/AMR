@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+
+    <param name="/robot_description" command="$(find xacro)/xacro $(find amr)/urdf/amr.urdf.xacro"/>
+    
+    <!--initial position-->
+    <arg name="x" default="0" />
+    <arg name="y" default="0"/>
+    <arg name="z" default="0"/>
+
+    <!--launch gazebo-->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="use_sim_time" value="true"/>
+        <arg name="debug" value="false"/>
+        <arg name="gui" value="true" />
+        <arg name="paused" value="true"/>
+    </include>
+
+    <!--spawn the robot-->
+    <node name="spawn_the_amr" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param /robot_description -model amr -x $(arg x) -y $(arg y) -z $(arg z)"/>
+    
+    <!-- load controllers-->
+    <rosparam command="load" file="$(find amr)/config/joint_controllers.yaml" />
+    <rosparam command="load" file="$(find amr)/config/robot_joint_states.yaml"/>
+    <rosparam command="load" file="$(find amr)/config/gazebo_ros_control_params.yaml"/>
+
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" respawn="false" ns="/amr" 
+        args="joint_state_controller 
+        joint_position_controller 
+        differential_drive_controller
+        --timeout 300" />
+    
+    <!-- Convert joint states to TF transform for rviz and rqt-->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"  output="screen" respawn="false"/>
+    <remap from="/joint_states" to="/amr/joint_states"/> 
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <remap from="/joint_states" to="/amr/joint_states"/> 
+
+    <node name="rqt_reconfigure" pkg="rqt_gui" type="rqt_gui" />
+    
+</launch>
