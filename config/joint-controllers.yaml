@@ -1,0 +1,44 @@
+amr:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100
+
+  joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: rialzo_joint
+    pid: {p: 700, i: 50, d: 70}
+
+ # joint2_position_controller:
+ #   type: effort_controllers/JointPositionController
+ #   joint: left_wheel_joint
+ #   pid: {p: 700, i: 50, d: 70}
+  
+ # joint3_position_controller:
+ #   type: effort_controllers/JointPositionController
+ #   joint: right_wheel_joint
+ #   pid: {p: 700, i: 50, d: 70}
+  
+  differential_drive_controller:
+    type: diff_drive_controller/DiffDriveController
+    publish_rate: 100
+    left_wheel: 'left_wheel_joint' 
+    right_wheel: 'right_wheel_joint'
+    wheel_separation : 0.73
+    wheel_radius : 0.2
+    enable_odom_tf: true
+    pose_covariance_diagonal : [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
+    twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
+    cmd_vel_timeout: 0.25
+    base_frame_id: amr_body
+    linear:
+      x:
+        has_velocity_limits    : true
+        max_velocity           : 1.5   
+        has_acceleration_limits: true
+        max_acceleration       : 0.6   
+    angular:
+      z:
+        has_velocity_limits    : true
+        max_velocity           : 0.35   
+        has_acceleration_limits: true
+        max_acceleration       : 0.1   
