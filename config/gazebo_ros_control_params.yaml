@@ -1,10 +1,25 @@
-/gazebo_ros_control:   
-  pid_gains:
-    left_wheel_joint:
-      p: 700
-      i: 50 
-      d: 70
-    right_wheel_joint:
-      p: 700
-      i: 50 
-      d: 70
+/gazebo_ros_control:
+    pid_gains:
+      left_wheel_joint:
+        position:
+          p: 0.0
+          d: 0.0
+          i: 0.0
+          i_clamp: 0.0
+        velocity:
+          p: 70000
+          d: 5000
+          i: 700
+          i_clamp: 6.0
+      right_wheel_joint:
+        position:
+          p: 0.0
+          d: 0.0
+          i: 0.0
+          i_clamp: 0.0
+        velocity:
+          p: 70000
+          d: 5000
+          i: 700
+          i_clamp: 6.0
+  
