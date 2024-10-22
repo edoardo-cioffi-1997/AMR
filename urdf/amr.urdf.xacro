@@ -1,29 +1,23 @@
+
 <?xml version="1.0"?>
 <robot name="amr" xmlns:xacro="http://www.ros.org/wiki/xacro"> 
-
-        <!--<link name="world"/>
-
-        <joint name="dummy" type="fixed">
-            <parent link="world"/>
-            <child link="amr_body"/>
-        </joint>-->
 
         <!-- wheel params -->
         <xacro:property name="radius" value="0.1"/>
         <xacro:property name="height_w" value="0.06"/>
-        <xacro:property name="mass_w" value="30"/>
+        <xacro:property name="mass_w" value="1"/>
 
         <!-- rialzo params -->
         <xacro:property name="height_r" value="0.072"/>
         <xacro:property name="width_r" value="0.925"/>
         <xacro:property name="depth_r" value="0.8862"/>
-        <xacro:property name="mass_r" value="160"/>
+        <xacro:property name="mass_r" value="1"/>
 
         <!--body params-->
         <xacro:property name="height_b" value="0.2579"/>
         <xacro:property name="width_b" value="1.3008"/>
         <xacro:property name="depth_b" value="0.9008"/>
-        <xacro:property name="mass_b" value="70"/>
+        <xacro:property name="mass_b" value="1"/>
 
         <link name="left_wheel">
             <inertial>
@@ -44,8 +38,8 @@
                 <surface>
                     <friction>
                         <ode>
-                            <mu>0.8</mu>
-                            <mu2>0.8</mu2> 
+                            <mu>0.5</mu>
+                            <mu2>0.5</mu2> 
                         </ode>
                     </friction>
                 </surface>
@@ -72,8 +66,8 @@
                 <surface>
                     <friction>
                         <ode>
-                            <mu>0.8</mu>
-                            <mu2>0.8</mu2> 
+                            <mu>0.5</mu>
+                            <mu2>0.5</mu2> 
                         </ode> 
                     </friction>
                 </surface>
@@ -95,7 +89,7 @@
             </visual>
             <collision>
                 <geometry>
-                    <mesh filename="package://amr/collision/amr_body.stl" scale="0.001 0.001 0.001"/>
+                    <mesh filename="package://amr/collision/amr_body_simp.stl" scale="0.001 0.001 0.001"/>
                 </geometry>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
             </collision>
@@ -115,36 +109,101 @@
             </visual>
             <collision>
                 <geometry>
-                    <mesh filename="package://amr/collision/amr_rialzo.stl" scale="0.001 0.001 0.001"/>
+                    <mesh filename="package://amr/collision/amr_rialzo_simp.stl" scale="0.001 0.001 0.001"/>
                 </geometry>
-
                 <origin xyz="0 0 0" rpy="0 0 0"/>
             </collision>
         </link>
+
+        <link name="laser_front">
+            <inertial>
+            <origin xyz="-0.37 -0.57 -0.17" rpy="0 0 0"/>
+                <mass value="0.005"/>
+                <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+            </inertial>
+            <visual>
+                <geometry>
+                    <mesh filename="package://amr/visual/laser_front.dae" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <origin xyz="-0.37 -0.57 -0.17" rpy="0 0 0"/>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="package://amr/collision/laser_front.stl" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <origin xyz="-0.37 -0.57 -0.17" rpy="0 0 0"/>
+            </collision>
+        </link>
+
+        <link name="laser_back">
+            <inertial>
+            <origin xyz="0.37 0.57 -0.17" rpy="0 0 0"/>
+                <mass value="0.005"/>
+                <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+            </inertial>
+            <visual>
+                <geometry>
+                    <mesh filename="package://amr/visual/laser_back.dae" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <origin xyz="0.37 0.57 -0.17" rpy="0 0 0"/>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="package://amr/collision/laser_back.stl" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <origin xyz="0.37 0.57 -0.17" rpy="0 0 0"/>
+            </collision>
+        </link>
+
+        <joint name="laser_front_joint" type="fixed">
+            <parent link="amr_body"/>
+            <child link="laser_front"/>
+            <origin xyz="0.37 0.57 0.17" rpy="0 0 0"/>
+        </joint>
+
+        <joint name="laser_back_joint" type="fixed">
+            <parent link="amr_body"/>
+            <child link="laser_back"/>
+            <origin xyz="-0.37 -0.57 0.17" rpy="0 0 0"/>
+        </joint>
+
 
         <joint name="left_wheel_joint" type="continuous">
             <parent link="amr_body"/>
             <child link="left_wheel"/>
             <origin xyz="0 0.37 0.1" rpy="0 0 0"/>
-            <limit effort="10000" velocity="0.35"/>
+            <limit effort="100" velocity="1.5"/>
             <axis xyz="0 1 0"/>
+            <dynamics damping="0.5" friction="0.1" />
         </joint>
 
         <joint name="right_wheel_joint" type="continuous">
             <parent link="amr_body"/>
             <child link="right_wheel"/>
             <origin xyz="0 -0.37 0.1" rpy="0 0 0"/>
-            <limit effort="10000" velocity="0.35"/>
+            <limit effort="100" velocity="1.5"/>
             <axis xyz="0 1 0"/>
+            <dynamics damping="0.5" friction="0.1" />
         </joint>
 
         <joint name="rialzo_joint" type="prismatic">
             <parent link="amr_body"/>
             <child link="amr_rialzo"/>
             <origin xyz="0 0 0" rpy="0 0 0"/>
-            <limit lower="0" upper="0.06" velocity="0.02" effort="1000"/>
+            <limit lower="0" upper="0.06" velocity="0.02" effort="10"/>
             <axis xyz="0 0 1"/>
+            <dynamics damping="0.1" friction="0.1" />
         </joint>
+        
+        <link name="base_footprint" />
+
+        <joint name="footprint_joint" type="fixed">
+            <parent link="amr_body"/>
+            <child link="base_footprint"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </joint>
+
+
 
         <transmission name="trans_rialzo_joint" >
             <type>transmission_interface/SimpleTransmission</type>
@@ -181,8 +240,8 @@
 
         <gazebo>
             <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-                <robotNamespace>/amr</robotNamespace>
-                  <robotParam>robot_description</robotParam>
+                <robotNamespace>amr</robotNamespace>
+                  <!-- <robotParam>robot_description</robotParam> -->
                   <controlPeriod>0.001</controlPeriod>
                   <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
                   <legacyModeNS>false</legacyModeNS>
@@ -194,7 +253,7 @@
                 <wheelSeparation>0.73</wheelSeparation>
                 <wheelDiameter>0.2</wheelDiameter>
                 <!-- Limits -->
-                <wheelTorque>10000</wheelTorque>
+                <wheelTorque>10</wheelTorque>
                 <wheelAcceleration>0.6</wheelAcceleration>
                 <!-- Output -->
                 <odometryFrame>odom</odometryFrame>
@@ -202,15 +261,74 @@
                 <publishOdomTF>true</publishOdomTF>
                 <publishWheelTF>true</publishWheelTF>
                 <alwaysOn>true</alwaysOn>
-                <updateRate>100</updateRate>
+                <updateRate>10</updateRate>
                 <legacyMode>false</legacyMode>
                 <commandTopic>cmd_vel</commandTopic>
                 <odometryTopic>odom</odometryTopic>
                 <publishWheelJointState>true</publishWheelJointState>
                 <rosDebugLevel>na</rosDebugLevel>
-                <odometrySource>world</odometrySource>
+                <odometrySource>encoder</odometrySource>
                 <publishTf>1</publishTf>
             </plugin>
         </gazebo>
+
+        <gazebo reference="laser_front">
+            <sensor name="laser_front" type="ray">
+                <pose> 0 0 0 0 0 0 </pose>
+                <visualize>true</visualize>
+                <update_rate>1</update_rate>
+                <ray> 
+                   <scan>
+                        <horizontal>
+                            <samples>270</samples>
+                            <min_angle>-3.1415</min_angle>
+                            <max_angle>3.1415</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.289</min>
+                        <max>4</max>
+                        <resolution>0.01</resolution>
+                    </range> 
+                </ray>
+                <plugin name="laser_front_controller" filename="libgazebo_ros_laser.so">
+                    <ros>
+                        <argument>~/out:=scan</argument>
+                    </ros>
+                    <output_type>sensor_msgs/LaserScan</output_type>
+                    <frame_name>laser_front</frame_name>
+                </plugin>
+            </sensor>
+        </gazebo>
+
+        <gazebo reference="laser_back">
+            <sensor name="laser_back" type="ray">
+                <pose> 0 0 0 0 0 0 </pose>
+                <visualize>true</visualize>
+                <update_rate>1</update_rate>
+                <ray> 
+                   <scan>
+                        <horizontal>
+                            <samples>270</samples>
+                            <min_angle>0</min_angle>
+                            <max_angle>6.2831</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.289</min>
+                        <max>4</max>
+                        <resolution>0.01</resolution>
+                    </range> 
+                </ray>
+                <plugin name="laser_back_controller" filename="libgazebo_ros_laser.so">
+                    <ros>
+                        <argument>~/out:=scan</argument>
+                    </ros>
+                    <output_type>sensor_msgs/LaserScan</output_type>
+                    <frame_name>laser_back</frame_name>
+                </plugin>
+            </sensor>
+        </gazebo>
+
 
 </robot>
