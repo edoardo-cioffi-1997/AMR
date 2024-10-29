@@ -7,7 +7,9 @@ In the spawn_amr.launch file, it is invoked also the following package:
        <param name="laserscan_topics" value="/amr/laser_front/scan /amr/laser_back/scan" />
 </node>
 
-which can be downloaded here: https://github.com/iralabdisco/ira_laser_tools
+which can be downloaded here:
+
+https://github.com/iralabdisco/ira_laser_tools
 
 In the folder multi_laser, still contained in this repository, there are slightly modified version of laserscan_multi_merger.cpp and laserscan_multi_merger.cfg
 
