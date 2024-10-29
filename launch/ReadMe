@@ -1,0 +1,13 @@
+In the spawn_amr.launch file, it is invoked also the following package: 
+
+<node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+       <param name="destination_frame" value="amr_body" />
+       <param name="cloud_destination_topic" value="/merged_cloud" />
+       <param name="scan_destination_topic"  value="/scan_multi" />
+       <param name="laserscan_topics" value="/amr/laser_front/scan /amr/laser_back/scan" />
+</node>
+
+which can be downloaded here: https://github.com/iralabdisco/ira_laser_tools
+
+In the folder file, there is a slightly modified version of laserscan_multi_merger.cpp and laserscan_multi_merger.cfg
+
