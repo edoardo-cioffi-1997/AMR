@@ -9,5 +9,5 @@ In the spawn_amr.launch file, it is invoked also the following package:
 
 which can be downloaded here: https://github.com/iralabdisco/ira_laser_tools
 
-In the folder file, there is a slightly modified version of laserscan_multi_merger.cpp and laserscan_multi_merger.cfg
+In the folder multi_laser, still contained in this repository, there are slightly modified version of laserscan_multi_merger.cpp and laserscan_multi_merger.cfg
 
