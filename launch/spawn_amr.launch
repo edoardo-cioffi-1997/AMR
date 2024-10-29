@@ -1,42 +1,62 @@
 <?xml version="1.0"?>
 <launch>
 
-    <param name="/robot_description" command="$(find xacro)/xacro $(find amr)/urdf/amr.urdf.xacro"/>
+    <param name="robot_description" command="$(find xacro)/xacro $(find amr)/urdf/amr.urdf.xacro"/>
     
-    <!--initial position-->
-    <arg name="x" default="0" />
-    <arg name="y" default="0"/>
+    <!-- amr initial position-->
+    <arg name="x" default="2" />
+    <arg name="y" default="2"/>
     <arg name="z" default="0"/>
+    <arg name="roll" default="0" />
+    <arg name="pitch" default="0"/>
+    <arg name="yaw" default="1.5708"/>
 
-    <!--launch gazebo-->
+      <!--launch gazebo-->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="use_sim_time" value="true"/>
         <arg name="debug" value="false"/>
         <arg name="gui" value="true" />
         <arg name="paused" value="true"/>
+        <arg name="verbose" value="true"/>
+        <arg name="world_name" value="$(find amr)/worlds/jointlab_new.world"/> 
     </include>
 
-    <!--spawn the robot-->
-    <node name="spawn_the_amr" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param /robot_description -model amr -x $(arg x) -y $(arg y) -z $(arg z)"/>
-    
+    <!--spawn the amr-->
+    <node name="spawn_the_amr" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model amr -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
+
     <!-- load controllers-->
     <rosparam command="load" file="$(find amr)/config/joint_controllers.yaml" />
     <rosparam command="load" file="$(find amr)/config/robot_joint_states.yaml"/>
     <rosparam command="load" file="$(find amr)/config/gazebo_ros_control_params.yaml"/>
 
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" respawn="false" ns="/amr" 
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" respawn="false" ns="amr" 
         args="joint_state_controller 
-        joint_position_controller 
+        joint_torque_controller 
         differential_drive_controller
         --timeout 300" />
     
     <!-- Convert joint states to TF transform for rviz and rqt-->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"  output="screen" respawn="false"/>
-    <remap from="/joint_states" to="/amr/joint_states"/> 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"  output="screen" respawn="false">
+        <remap from="/joint_states" to="amr/joint_states"/>
+    </node> 
 
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-    <remap from="/joint_states" to="/amr/joint_states"/> 
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <remap from="/joint_states" to="amr/joint_states"/> 
+    </node>
 
-    <node name="rqt_reconfigure" pkg="rqt_gui" type="rqt_gui" />
+    <!--merge the lasers, gmapping only accept one laser-->
+
+    <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+       <param name="destination_frame" value="amr_body" />
+       <param name="cloud_destination_topic" value="/merged_cloud" />
+       <param name="scan_destination_topic"  value="/scan_multi" />
+       <param name="laserscan_topics" value="/amr/laser_front/scan /amr/laser_back/scan" />
+    </node>
+
+    <!-- <node name="rqt_reconfigure" pkg="rqt_gui" type="rqt_gui" /> -->
+
+    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop" output="screen" >
+        <remap from="/cmd_vel" to="amr/differential_drive_controller/cmd_vel"/>
+    </node>
     
 </launch>
