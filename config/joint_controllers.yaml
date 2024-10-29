@@ -7,16 +7,6 @@ amr:
     type: effort_controllers/JointPositionController
     joint: rialzo_joint
     pid: {p: 7000, i: 500, d: 70}
-
- # joint2_position_controller:
- #   type: effort_controllers/JointPositionController
- #   joint: left_wheel_joint
- #   pid: {p: 700, i: 50, d: 70}
-  
- # joint3_position_controller:
- #   type: effort_controllers/JointPositionController
- #   joint: right_wheel_joint
- #   pid: {p: 700, i: 50, d: 70}
   
   differential_drive_controller:
     type: diff_drive_controller/DiffDriveController
@@ -33,12 +23,14 @@ amr:
     linear:
       x:
         has_velocity_limits    : true
-        max_velocity           : 1.5   
+        max_velocity           : 1.5
+        min_velocity           : -1.5
         has_acceleration_limits: true
         max_acceleration       : 0.6   
     angular:
       z:
         has_velocity_limits    : true
         max_velocity           : 0.35   
+        min_velocity           : -0.35
         has_acceleration_limits: true
         max_acceleration       : 0.1   
